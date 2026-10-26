@@ -1,4 +1,3 @@
-
 package ru.automaster.app
 
 import android.app.Activity
@@ -23,6 +22,7 @@ import java.util.Locale
 class MainActivity : Activity() {
 
     private lateinit var root: LinearLayout
+
     private val prefs by lazy {
         getSharedPreferences("automaster_data", Context.MODE_PRIVATE)
     }
@@ -43,6 +43,7 @@ class MainActivity : Activity() {
         Service("Диагностика", "Компьютерная диагностика", 1500),
         Service("Диагностика", "Проверка подвески", 1000),
         Service("Диагностика", "Поиск неисправности электрики", 1800),
+
         Service("ТО", "Замена масла двигателя", 1200),
         Service("ТО", "Замена масляного фильтра", 300),
         Service("ТО", "Замена воздушного фильтра", 400),
@@ -50,34 +51,43 @@ class MainActivity : Activity() {
         Service("ТО", "Замена свечей зажигания", 1000),
         Service("ТО", "Замена топливного фильтра", 1200),
         Service("ТО", "Замена приводного ремня", 1500),
+
         Service("Тормоза", "Замена передних тормозных колодок", 1800),
         Service("Тормоза", "Замена задних тормозных колодок", 2000),
         Service("Тормоза", "Замена тормозного диска, одна сторона", 1500),
         Service("Тормоза", "Замена тормозной жидкости", 1200),
+
         Service("Охлаждение", "Замена антифриза", 1800),
         Service("Охлаждение", "Замена термостата", 2500),
+
         Service("Двигатель", "Замена ремня ГРМ", 6500),
         Service("Двигатель", "Регулировка клапанов", 3000),
         Service("Двигатель", "Снятие и установка ГБЦ", 12000),
         Service("Двигатель", "Замена прокладки ГБЦ", 18000),
         Service("Двигатель", "Замена двигателя", 25000),
+
         Service("Электрика", "Замена аккумулятора", 500),
         Service("Электрика", "Замена стартера", 2500),
         Service("Электрика", "Замена генератора", 2500),
+
         Service("Подвеска", "Замена амортизатора, одна сторона", 2500),
         Service("Подвеска", "Замена шаровой опоры", 1800),
         Service("Подвеска", "Замена рулевого наконечника", 1200),
         Service("Подвеска", "Замена ступичного подшипника", 3500),
+
         Service("Трансмиссия", "Замена сцепления", 9000),
         Service("Трансмиссия", "Замена АКПП", 18000),
         Service("Трансмиссия", "Замена МКПП", 12000),
+
         Service("Регулировки", "Развал-схождение", 2500)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         window.statusBarColor = navy
         window.navigationBarColor = navy
+
         showHome()
     }
 
@@ -90,14 +100,20 @@ class MainActivity : Activity() {
             cornerRadius = dp(radius).toFloat()
         }
 
-    private fun makeRoot(title: String, subtitle: String = "УЧЁТ АВТОСЕРВИСА") {
+    private fun makeRoot(
+        title: String,
+        subtitle: String = "УЧЁТ АВТОСЕРВИСА"
+    ) {
         root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(14), dp(16), dp(26))
             setBackgroundColor(pale)
         }
 
-        val scroll = ScrollView(this).apply { isFillViewport = true }
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+        }
+
         scroll.addView(root)
         setContentView(scroll)
 
@@ -129,7 +145,9 @@ class MainActivity : Activity() {
         )
 
         if (title != "АвтоМастер") {
-            addButton("← На главную") { showHome() }
+            addButton("← На главную") {
+                showHome()
+            }
         }
     }
 
@@ -143,35 +161,54 @@ class MainActivity : Activity() {
             text = value
             textSize = size.toFloat()
             setTextColor(color)
-            if (bold) setTypeface(null, Typeface.BOLD)
+
+            if (bold) {
+                setTypeface(null, Typeface.BOLD)
+            }
+
             setPadding(dp(2), dp(6), dp(2), dp(6))
         })
     }
 
-    private fun addButton(title: String, action: () -> Unit) {
-        root.addView(Button(this).apply {
-            text = title
-            isAllCaps = false
-            textSize = 14f
-            setTextColor(Color.WHITE)
-            background = rounded(
-                if (title.startsWith("Удалить")) {
-                    Color.rgb(180, 62, 62)
-                } else {
-                    navy
-                },
-                12
-            )
-            minHeight = dp(46)
-            setPadding(dp(10), dp(5), dp(10), dp(5))
-            setOnClickListener { action() }
-        }, LinearLayout.LayoutParams(-1, -2).apply {
-            topMargin = dp(3)
-            bottomMargin = dp(3)
-        })
+    private fun addButton(
+        title: String,
+        action: () -> Unit
+    ) {
+        root.addView(
+            Button(this).apply {
+                text = title
+                isAllCaps = false
+                textSize = 14f
+                setTextColor(Color.WHITE)
+
+                background = rounded(
+                    if (title.startsWith("Удалить")) {
+                        Color.rgb(180, 62, 62)
+                    } else {
+                        navy
+                    },
+                    12
+                )
+
+                minHeight = dp(46)
+                setPadding(dp(10), dp(5), dp(10), dp(5))
+
+                setOnClickListener {
+                    action()
+                }
+            },
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(3)
+                bottomMargin = dp(3)
+            }
+        )
     }
 
-    private fun addCard(title: String, detail: String, action: () -> Unit) {
+    private fun addCard(
+        title: String,
+        detail: String,
+        action: () -> Unit
+    ) {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(15), dp(13), dp(15), dp(13))
@@ -179,7 +216,10 @@ class MainActivity : Activity() {
             elevation = dp(2).toFloat()
             isClickable = true
             isFocusable = true
-            setOnClickListener { action() }
+
+            setOnClickListener {
+                action()
+            }
         }
 
         card.addView(TextView(this).apply {
@@ -196,10 +236,13 @@ class MainActivity : Activity() {
             setPadding(0, dp(5), 0, 0)
         })
 
-        root.addView(card, LinearLayout.LayoutParams(-1, -2).apply {
-            topMargin = dp(5)
-            bottomMargin = dp(5)
-        })
+        root.addView(
+            card,
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(5)
+                bottomMargin = dp(5)
+            }
+        )
     }
 
     private fun readRecords(key: String): JSONArray {
@@ -210,49 +253,85 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun saveRecords(key: String, records: JSONArray) {
-        prefs.edit().putString(key, records.toString()).apply()
+    private fun saveRecords(
+        key: String,
+        records: JSONArray
+    ) {
+        prefs.edit()
+            .putString(key, records.toString())
+            .apply()
     }
 
-    private fun saveRecord(key: String, record: JSONObject) {
+    private fun saveRecord(
+        key: String,
+        record: JSONObject
+    ) {
         val records = readRecords(key)
         records.put(record)
         saveRecords(key, records)
     }
 
-    private fun watch(edit: EditText, changed: () -> Unit) {
+    private fun watch(
+        edit: EditText,
+        changed: () -> Unit
+    ) {
         edit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
-                s: CharSequence?, start: Int, count: Int, after: Int
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
             ) {}
+
             override fun onTextChanged(
-                s: CharSequence?, start: Int, before: Int, count: Int
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
             ) {
                 changed()
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
     }
 
     private fun money(amount: Int): String =
-        String.format(Locale("ru", "RU"), "%,d ₽", amount).replace(',', ' ')
+        String.format(
+            Locale("ru", "RU"),
+            "%,d ₽",
+            amount
+        ).replace(',', ' ')
 
     private fun today(): String =
-        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+        SimpleDateFormat(
+            "dd.MM.yyyy",
+            Locale.getDefault()
+        ).format(Date())
 
     private fun now(): String =
-        SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date())
+        SimpleDateFormat(
+            "dd.MM.yyyy HH:mm",
+            Locale.getDefault()
+        ).format(Date())
 
+    // Главный экран
     private fun showHome() {
-        makeRoot("АвтоМастер", "ПРОФЕССИОНАЛЬНЫЙ УЧЁТ АВТОСЕРВИСА")
+        makeRoot(
+            "АвтоМастер",
+            "ПРОФЕССИОНАЛЬНЫЙ УЧЁТ АВТОСЕРВИСА"
+        )
 
         val cars = readRecords("cars").length()
         val orders = readRecords("orders")
+
         var total = 0
 
         for (i in 0 until orders.length()) {
             total += orders.optJSONObject(i)
-                ?.optString("price")?.toDoubleOrNull()?.toInt() ?: 0
+                ?.optString("price")
+                ?.toDoubleOrNull()
+                ?.toInt() ?: 0
         }
 
         val stats = LinearLayout(this).apply {
@@ -282,58 +361,108 @@ class MainActivity : Activity() {
             setTypeface(null, Typeface.BOLD)
         })
 
-        root.addView(stats, LinearLayout.LayoutParams(-1, -2).apply {
-            bottomMargin = dp(12)
-        })
+        root.addView(
+            stats,
+            LinearLayout.LayoutParams(-1, -2).apply {
+                bottomMargin = dp(12)
+            }
+        )
 
-        addButton("Клиенты и автомобили") { showCars() }
-        addButton("Заказ-наряды и расчёт стоимости") { showOrders() }
-        addButton("Прайс-лист работ") { showPrices() }
-        addButton("История обслуживания") { showHistory() }
-        addButton("Диагностика") { showDiagnostics() }
+        addButton("Клиенты и автомобили") {
+            showCars()
+        }
+
+        addButton("Заказ-наряды и расчёт стоимости") {
+            showOrders()
+        }
+
+        addButton("Прайс-лист работ") {
+            showPrices()
+        }
+
+        addButton("История обслуживания") {
+            showHistory()
+        }
+
+        addButton("Диагностика") {
+            showDiagnostics()
+        }
+
+        // Новая функция резервного копирования
+        addButton("Резервная копия данных") {
+            exportBackup()
+        }
 
         addText(
             "Работает офлайн. Данные хранятся на этом телефоне.",
-            12, false, muted
+            12,
+            false,
+            muted
         )
+
         addText(
             "Цены ориентировочные для Красноярского края. " +
                 "Это стоимость работ без запчастей; уточняйте цену до ремонта.",
-            12, false, muted
+            12,
+            false,
+            muted
         )
     }
 
+    // Клиенты и автомобили
     private fun showCars() {
         makeRoot("Клиенты и автомобили")
-        addButton("+ Добавить клиента / автомобиль") { addCarDialog() }
+
+        addButton("+ Добавить клиента / автомобиль") {
+            addCarDialog()
+        }
 
         val cars = readRecords("cars")
 
         if (cars.length() == 0) {
-            addText("Пока нет клиентов. Добавьте первую карточку.", 14, false, muted)
+            addText(
+                "Пока нет клиентов. Добавьте первую карточку.",
+                14,
+                false,
+                muted
+            )
         }
 
         for (i in cars.length() - 1 downTo 0) {
             val car = cars.optJSONObject(i) ?: continue
-            val name = "${car.optString("brand")} ${car.optString("model")}".trim()
+
+            val name =
+                "${car.optString("brand")} ${car.optString("model")}".trim()
+
             val details =
-                "Владелец: ${car.optString("owner")}\\n" +
-                "Госномер: ${car.optString("plate")} • Год: ${car.optString("year")}\\n" +
+                "Владелец: ${car.optString("owner")}\n" +
+                "Госномер: ${car.optString("plate")} • " +
+                "Год: ${car.optString("year")}\n" +
                 "Телефон: ${car.optString("phone")}"
 
-            addCard(name.ifBlank { "Автомобиль" }, details) {
+            addCard(
+                name.ifBlank { "Автомобиль" },
+                details
+            ) {
                 showCarDetails(car)
             }
 
             addButton("Удалить: $name") {
                 AlertDialog.Builder(this)
-                    .setMessage("Удалить карточку автомобиля? История заказов сохранится.")
+                    .setMessage(
+                        "Удалить карточку автомобиля? " +
+                            "История заказов сохранится."
+                    )
                     .setNegativeButton("Отмена", null)
                     .setPositiveButton("Удалить") { _, _ ->
                         val updated = JSONArray()
+
                         for (j in 0 until cars.length()) {
-                            if (j != i) updated.put(cars.getJSONObject(j))
+                            if (j != i) {
+                                updated.put(cars.getJSONObject(j))
+                            }
                         }
+
                         saveRecords("cars", updated)
                         showCars()
                     }
@@ -348,10 +477,10 @@ class MainActivity : Activity() {
                 car.optString("plate")
 
         val description =
-            "$carName\\n" +
-            "Владелец: ${car.optString("owner")}\\n" +
-            "Телефон: ${car.optString("phone")}\\n" +
-            "Год: ${car.optString("year")}\\n" +
+            "$carName\n" +
+            "Владелец: ${car.optString("owner")}\n" +
+            "Телефон: ${car.optString("phone")}\n" +
+            "Год: ${car.optString("year")}\n" +
             "VIN: ${car.optString("vin")}"
 
         AlertDialog.Builder(this)
@@ -359,7 +488,10 @@ class MainActivity : Activity() {
             .setMessage(description)
             .setNegativeButton("Закрыть", null)
             .setPositiveButton("Новый заказ") { _, _ ->
-                addOrderDialog(carName.trim(), car.optString("owner"))
+                addOrderDialog(
+                    carName.trim(),
+                    car.optString("owner")
+                )
             }
             .setNeutralButton("История") { _, _ ->
                 showHistory(carName.trim())
@@ -385,23 +517,40 @@ class MainActivity : Activity() {
             }
 
             val car = JSONObject()
+
             listOf(
-                "brand", "model", "year", "plate",
-                "owner", "phone", "vin"
+                "brand",
+                "model",
+                "year",
+                "plate",
+                "owner",
+                "phone",
+                "vin"
             ).forEachIndexed { index, key ->
                 car.put(key, values[index])
             }
 
             car.put("createdAt", today())
+
             saveRecord("cars", car)
             showCars()
             toast("Карточка сохранена")
         }
     }
 
+    // Прайс-лист
     private fun showPrices() {
-        makeRoot("Прайс-лист", "КРАСНОЯРСКИЙ КРАЙ • ОРИЕНТИРОВОЧНЫЕ ЦЕНЫ")
-        addText("Стоимость работ без запчастей. Поиск по названию.", 12, false, muted)
+        makeRoot(
+            "Прайс-лист",
+            "КРАСНОЯРСКИЙ КРАЙ • ОРИЕНТИРОВОЧНЫЕ ЦЕНЫ"
+        )
+
+        addText(
+            "Стоимость работ без запчастей. Поиск по названию.",
+            12,
+            false,
+            muted
+        )
 
         val search = EditText(this).apply {
             hint = "Например, замена масла"
@@ -411,18 +560,23 @@ class MainActivity : Activity() {
             background = rounded(Color.WHITE, 12)
         }
 
-        root.addView(search, LinearLayout.LayoutParams(-1, -2).apply {
-            topMargin = dp(8)
-            bottomMargin = dp(8)
-        })
+        root.addView(
+            search,
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(8)
+                bottomMargin = dp(8)
+            }
+        )
 
         val list = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
+
         root.addView(list)
 
         fun render(query: String) {
             list.removeAllViews()
+
             val filtered = services.filter {
                 it.name.contains(query, true) ||
                     it.category.contains(query, true)
@@ -464,41 +618,61 @@ class MainActivity : Activity() {
                     setTypeface(null, Typeface.BOLD)
                 })
 
-                list.addView(card, LinearLayout.LayoutParams(-1, -2).apply {
-                    topMargin = dp(4)
-                    bottomMargin = dp(4)
-                })
+                list.addView(
+                    card,
+                    LinearLayout.LayoutParams(-1, -2).apply {
+                        topMargin = dp(4)
+                        bottomMargin = dp(4)
+                    }
+                )
             }
         }
 
-        watch(search) { render(search.text.toString()) }
+        watch(search) {
+            render(search.text.toString())
+        }
+
         render("")
-        addButton("Создать заказ-наряд") { addOrderDialog() }
+
+        addButton("Создать заказ-наряд") {
+            addOrderDialog()
+        }
     }
 
+    // Заказ-наряды
     private fun showOrders() {
         makeRoot("Заказ-наряды")
-        addButton("+ Новый заказ-наряд") { addOrderDialog() }
+
+        addButton("+ Новый заказ-наряд") {
+            addOrderDialog()
+        }
 
         val orders = readRecords("orders")
 
         if (orders.length() == 0) {
             addText(
-                "Заказов пока нет. Создайте заказ — стоимость рассчитается по выбранным работам.",
-                14, false, muted
+                "Заказов пока нет. Создайте заказ — стоимость " +
+                    "рассчитается по выбранным работам.",
+                14,
+                false,
+                muted
             )
         }
 
         for (i in orders.length() - 1 downTo 0) {
             val order = orders.optJSONObject(i) ?: continue
             val description = orderDescription(order)
-            val amount = order.optString("price").toDoubleOrNull()?.toInt() ?: 0
+
+            val amount = order.optString("price")
+                .toDoubleOrNull()
+                ?.toInt() ?: 0
 
             addCard(
-                "Заказ № ${order.optString("number")} • ${order.optString("status")}",
-                "${order.optString("customer")}\\n" +
-                    "${order.optString("car")}\\n" +
-                    "${order.optString("date")}\\n" +
+                "Заказ № ${order.optString("number")} • " +
+                    order.optString("status"),
+                "${order.optString("customer")}\n" +
+                    "${order.optString("car")}\n" +
+                    "${order.optString("date")}\n" +
                     "Итого: ${money(amount)}"
             ) {
                 AlertDialog.Builder(this)
@@ -524,9 +698,13 @@ class MainActivity : Activity() {
                     .setNegativeButton("Отмена", null)
                     .setPositiveButton("Удалить") { _, _ ->
                         val updated = JSONArray()
+
                         for (j in 0 until orders.length()) {
-                            if (j != i) updated.put(orders.getJSONObject(j))
+                            if (j != i) {
+                                updated.put(orders.getJSONObject(j))
+                            }
                         }
+
                         saveRecords("orders", updated)
                         showOrders()
                     }
@@ -570,11 +748,13 @@ class MainActivity : Activity() {
             setPadding(dp(10), dp(8), dp(10), dp(8))
             background = rounded(Color.WHITE, 10)
         }
+
         wrap.addView(search)
 
         val serviceList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
+
         wrap.addView(serviceList)
 
         val priceLabel = TextView(this).apply {
@@ -584,6 +764,7 @@ class MainActivity : Activity() {
             setTypeface(null, Typeface.BOLD)
             setPadding(0, dp(8), 0, dp(8))
         }
+
         wrap.addView(priceLabel)
 
         val inputs = fields.map { (hintText, initial) ->
@@ -597,9 +778,15 @@ class MainActivity : Activity() {
         }
 
         fun total(): Int {
-            val extra = inputs[4].text.toString().toIntOrNull() ?: 0
-            val discount = inputs[5].text.toString().toIntOrNull() ?: 0
-            return (chosen.values.sum() + extra - discount).coerceAtLeast(0)
+            val extra =
+                inputs[4].text.toString().toIntOrNull() ?: 0
+
+            val discount =
+                inputs[5].text.toString().toIntOrNull() ?: 0
+
+            return (
+                chosen.values.sum() + extra - discount
+            ).coerceAtLeast(0)
         }
 
         fun updateTotal() {
@@ -625,6 +812,7 @@ class MainActivity : Activity() {
                         } else {
                             chosen.remove(service.name)
                         }
+
                         updateTotal()
                     }
                 }
@@ -635,9 +823,18 @@ class MainActivity : Activity() {
             updateTotal()
         }
 
-        watch(search) { renderServices(search.text.toString()) }
-        watch(inputs[4]) { updateTotal() }
-        watch(inputs[5]) { updateTotal() }
+        watch(search) {
+            renderServices(search.text.toString())
+        }
+
+        watch(inputs[4]) {
+            updateTotal()
+        }
+
+        watch(inputs[5]) {
+            updateTotal()
+        }
+
         renderServices("")
 
         val dialogScroll = ScrollView(this).apply {
@@ -652,58 +849,82 @@ class MainActivity : Activity() {
             .create()
 
         dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                if (inputs[1].text.isBlank() || inputs[2].text.isBlank()) {
-                    toast("Укажи клиента и автомобиль")
-                    return@setOnClickListener
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener {
+                    if (
+                        inputs[1].text.isBlank() ||
+                        inputs[2].text.isBlank()
+                    ) {
+                        toast("Укажи клиента и автомобиль")
+                        return@setOnClickListener
+                    }
+
+                    val extraName =
+                        inputs[3].text.toString().trim()
+
+                    val extraPrice =
+                        inputs[4].text.toString().toIntOrNull() ?: 0
+
+                    val discount =
+                        inputs[5].text.toString().toIntOrNull() ?: 0
+
+                    if (extraPrice < 0 || discount < 0) {
+                        toast("Цена и скидка не могут быть отрицательными")
+                        return@setOnClickListener
+                    }
+
+                    val workNames = chosen.keys.toMutableList()
+
+                    if (extraName.isNotBlank()) {
+                        workNames.add(extraName)
+                    }
+
+                    if (workNames.isEmpty()) {
+                        toast("Выбери работу или укажи дополнительную")
+                        return@setOnClickListener
+                    }
+
+                    if (extraPrice > 0 && extraName.isBlank()) {
+                        toast("Укажи название дополнительной работы")
+                        return@setOnClickListener
+                    }
+
+                    val order = JSONObject()
+
+                    order.put("number", inputs[0].text.toString())
+                    order.put("customer", inputs[1].text.toString())
+                    order.put("car", inputs[2].text.toString())
+                    order.put("works", workNames.joinToString(", "))
+                    order.put("items", JSONArray(chosen.keys.toList()))
+                    order.put("price", total().toString())
+                    order.put("discount", discount)
+
+                    order.put(
+                        "status",
+                        inputs[6].text.toString().ifBlank { "Принят" }
+                    )
+
+                    order.put("comment", inputs[7].text.toString())
+                    order.put("date", today())
+
+                    saveRecord("orders", order)
+
+                    dialog.dismiss()
+                    showOrders()
+
+                    toast("Заказ сохранён: ${money(total())}")
                 }
-
-                val extraName = inputs[3].text.toString().trim()
-                val extraPrice = inputs[4].text.toString().toIntOrNull() ?: 0
-                val discount = inputs[5].text.toString().toIntOrNull() ?: 0
-
-                if (extraPrice < 0 || discount < 0) {
-                    toast("Цена и скидка не могут быть отрицательными")
-                    return@setOnClickListener
-                }
-
-                val workNames = chosen.keys.toMutableList()
-                if (extraName.isNotBlank()) workNames.add(extraName)
-
-                if (workNames.isEmpty()) {
-                    toast("Выбери работу или укажи дополнительную")
-                    return@setOnClickListener
-                }
-
-                if (extraPrice > 0 && extraName.isBlank()) {
-                    toast("Укажи название дополнительной работы")
-                    return@setOnClickListener
-                }
-
-                val order = JSONObject()
-                order.put("number", inputs[0].text.toString())
-                order.put("customer", inputs[1].text.toString())
-                order.put("car", inputs[2].text.toString())
-                order.put("works", workNames.joinToString(", "))
-                order.put("items", JSONArray(chosen.keys.toList()))
-                order.put("price", total().toString())
-                order.put("discount", discount)
-                order.put("status", inputs[6].text.toString().ifBlank { "Принят" })
-                order.put("comment", inputs[7].text.toString())
-                order.put("date", today())
-
-                saveRecord("orders", order)
-                dialog.dismiss()
-                showOrders()
-                toast("Заказ сохранён: ${money(total())}")
-            }
         }
 
         dialog.show()
     }
 
+    // История обслуживания
     private fun showHistory(carFilter: String = "") {
-        makeRoot("История обслуживания", "ЗАКАЗЫ И РЕМОНТЫ ПО АВТОМОБИЛЯМ")
+        makeRoot(
+            "История обслуживания",
+            "ЗАКАЗЫ И РЕМОНТЫ ПО АВТОМОБИЛЯМ"
+        )
 
         val search = EditText(this).apply {
             hint = "Поиск по авто, владельцу, госномеру"
@@ -712,31 +933,41 @@ class MainActivity : Activity() {
             setPadding(dp(12), dp(10), dp(12), dp(10))
             background = rounded(Color.WHITE, 12)
         }
+
         root.addView(search)
 
         val list = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
+
         root.addView(list)
 
         fun render(query: String) {
             list.removeAllViews()
+
             val orders = readRecords("orders")
             var count = 0
 
             for (i in orders.length() - 1 downTo 0) {
                 val order = orders.optJSONObject(i) ?: continue
+
                 val searchable =
                     "${order.optString("car")} " +
                     "${order.optString("customer")} " +
                     "${order.optString("works")}"
 
-                if (query.isNotBlank() && !searchable.contains(query, true)) {
+                if (
+                    query.isNotBlank() &&
+                    !searchable.contains(query, true)
+                ) {
                     continue
                 }
 
                 count++
-                val amount = order.optString("price").toDoubleOrNull()?.toInt() ?: 0
+
+                val amount = order.optString("price")
+                    .toDoubleOrNull()
+                    ?.toInt() ?: 0
 
                 val card = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
@@ -745,7 +976,10 @@ class MainActivity : Activity() {
                 }
 
                 card.addView(TextView(this).apply {
-                    text = "${order.optString("date")} • Заказ № ${order.optString("number")}"
+                    text =
+                        "${order.optString("date")} • " +
+                        "Заказ № ${order.optString("number")}"
+
                     textSize = 11f
                     setTextColor(muted)
                 })
@@ -759,9 +993,11 @@ class MainActivity : Activity() {
                 })
 
                 card.addView(TextView(this).apply {
-                    text = "Клиент: ${order.optString("customer")}\\n" +
-                        "Работы: ${order.optString("works")}\\n" +
+                    text =
+                        "Клиент: ${order.optString("customer")}\n" +
+                        "Работы: ${order.optString("works")}\n" +
                         "Статус: ${order.optString("status")}"
+
                     textSize = 13f
                     setTextColor(ink)
                 })
@@ -774,10 +1010,13 @@ class MainActivity : Activity() {
                     setPadding(0, dp(5), 0, 0)
                 })
 
-                list.addView(card, LinearLayout.LayoutParams(-1, -2).apply {
-                    topMargin = dp(5)
-                    bottomMargin = dp(5)
-                })
+                list.addView(
+                    card,
+                    LinearLayout.LayoutParams(-1, -2).apply {
+                        topMargin = dp(5)
+                        bottomMargin = dp(5)
+                    }
+                )
             }
 
             if (count == 0) {
@@ -787,37 +1026,53 @@ class MainActivity : Activity() {
                     } else {
                         "По запросу ничего не найдено."
                     }
+
                     setTextColor(muted)
                     setPadding(0, dp(12), 0, dp(12))
                 })
             }
         }
 
-        watch(search) { render(search.text.toString()) }
+        watch(search) {
+            render(search.text.toString())
+        }
+
         render(carFilter)
     }
 
+    // Диагностика
     private fun showDiagnostics() {
         makeRoot("Диагностика")
-        addButton("+ Новая запись диагностики") { addDiagnosticDialog() }
+
+        addButton("+ Новая запись диагностики") {
+            addDiagnosticDialog()
+        }
 
         val records = readRecords("diagnostics")
+
         if (records.length() == 0) {
-            addText("Записей диагностики пока нет.", 14, false, muted)
+            addText(
+                "Записей диагностики пока нет.",
+                14,
+                false,
+                muted
+            )
         }
 
         for (i in records.length() - 1 downTo 0) {
             val item = records.optJSONObject(i) ?: continue
+
             val description =
-                "Автомобиль: ${item.optString("car")}\\n" +
-                "Симптомы: ${item.optString("symptoms")}\\n" +
-                "Данные сканера: ${item.optString("data")}\\n" +
-                "Заключение: ${item.optString("conclusion")}\\n" +
+                "Автомобиль: ${item.optString("car")}\n" +
+                "Симптомы: ${item.optString("symptoms")}\n" +
+                "Данные сканера: ${item.optString("data")}\n" +
+                "Заключение: ${item.optString("conclusion")}\n" +
                 "Дата: ${item.optString("date")}"
 
             addCard(
                 item.optString("car"),
-                "Дата: ${item.optString("date")}\\n${item.optString("symptoms")}"
+                "Дата: ${item.optString("date")}\n" +
+                    item.optString("symptoms")
             ) {
                 AlertDialog.Builder(this)
                     .setTitle("Диагностика")
@@ -835,9 +1090,13 @@ class MainActivity : Activity() {
                     .setNegativeButton("Отмена", null)
                     .setPositiveButton("Удалить") { _, _ ->
                         val updated = JSONArray()
+
                         for (j in 0 until records.length()) {
-                            if (j != i) updated.put(records.getJSONObject(j))
+                            if (j != i) {
+                                updated.put(records.getJSONObject(j))
+                            }
                         }
+
                         saveRecords("diagnostics", updated)
                         showDiagnostics()
                     }
@@ -861,16 +1120,26 @@ class MainActivity : Activity() {
             }
 
             val item = JSONObject()
-            listOf("car", "symptoms", "data", "conclusion")
-                .forEachIndexed { index, key -> item.put(key, values[index]) }
+
+            listOf(
+                "car",
+                "symptoms",
+                "data",
+                "conclusion"
+            ).forEachIndexed { index, key ->
+                item.put(key, values[index])
+            }
 
             item.put("date", now())
+
             saveRecord("diagnostics", item)
             showDiagnostics()
+
             toast("Диагностика сохранена")
         }
     }
 
+    // Универсальная форма
     private fun showForm(
         title: String,
         fields: List<Pair<String, String>>,
@@ -891,7 +1160,9 @@ class MainActivity : Activity() {
             }
         }
 
-        val scroll = ScrollView(this).apply { addView(container) }
+        val scroll = ScrollView(this).apply {
+            addView(container)
+        }
 
         val dialog = AlertDialog.Builder(this)
             .setTitle(title)
@@ -901,24 +1172,37 @@ class MainActivity : Activity() {
             .create()
 
         dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                onSave(inputs.map { it.text.toString().trim() })
-                if (dialog.isShowing) dialog.dismiss()
-            }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener {
+                    onSave(
+                        inputs.map {
+                            it.text.toString().trim()
+                        }
+                    )
+
+                    if (dialog.isShowing) {
+                        dialog.dismiss()
+                    }
+                }
         }
 
         dialog.show()
     }
 
+    // Формирование текста заказ-наряда
     private fun orderDescription(order: JSONObject): String {
-        val amount = order.optString("price").toDoubleOrNull()?.toInt() ?: 0
-        return "АвтоМастер — заказ-наряд № ${order.optString("number")}\\n" +
-            "Дата: ${order.optString("date")}\\n" +
-            "Клиент: ${order.optString("customer")}\\n" +
-            "Автомобиль: ${order.optString("car")}\\n" +
-            "Работы: ${order.optString("works")}\\n" +
-            "Стоимость работ: ${money(amount)}\\n" +
-            "Статус: ${order.optString("status")}\\n" +
+        val amount = order.optString("price")
+            .toDoubleOrNull()
+            ?.toInt() ?: 0
+
+        return "АвтоМастер — заказ-наряд № " +
+            "${order.optString("number")}\n" +
+            "Дата: ${order.optString("date")}\n" +
+            "Клиент: ${order.optString("customer")}\n" +
+            "Автомобиль: ${order.optString("car")}\n" +
+            "Работы: ${order.optString("works")}\n" +
+            "Стоимость работ: ${money(amount)}\n" +
+            "Статус: ${order.optString("status")}\n" +
             "Комментарий: ${order.optString("comment")}"
     }
 
@@ -928,22 +1212,47 @@ class MainActivity : Activity() {
 
         for (i in 0 until orders.length()) {
             val number = orders.optJSONObject(i)
-                ?.optString("number")?.toIntOrNull() ?: 0
+                ?.optString("number")
+                ?.toIntOrNull() ?: 0
+
             max = maxOf(max, number)
         }
 
         return (max + 1).toString().padStart(4, '0')
     }
 
+    // Резервная копия автомобилей, заказов и диагностики
+    private fun exportBackup() {
+        val backup = JSONObject().apply {
+            put("app", "АвтоМастер")
+            put("formatVersion", 1)
+            put("exportedAt", now())
+            put("cars", readRecords("cars"))
+            put("orders", readRecords("orders"))
+            put("diagnostics", readRecords("diagnostics"))
+        }
+
+        shareText(backup.toString(2))
+        toast("Резервная копия подготовлена")
+    }
+
+    // Поделиться текстом или резервной копией
     private fun shareText(text: String) {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, text)
         }
-        startActivity(Intent.createChooser(intent, "Поделиться"))
+
+        startActivity(
+            Intent.createChooser(intent, "Поделиться")
+        )
     }
 
     private fun toast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this,
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
