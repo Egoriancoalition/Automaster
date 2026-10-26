@@ -376,14 +376,19 @@ class MainActivity : Activity() {
             showOrders()
         }
 
-        addButton("Прайс-лист работ") {
+                addButton("Прайс-лист работ") {
             showPrices()
+        }
+
+        addButton("Справочник ремонта двигателей") {
+            startActivity(
+                Intent(this, RepairReferenceActivity::class.java)
+            )
         }
 
         addButton("История обслуживания") {
             showHistory()
         }
-
         addButton("Диагностика") {
             showDiagnostics()
         }
