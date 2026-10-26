@@ -41,7 +41,7 @@ class RepairReferenceActivity : Activity() {
 
         search = EditText(this).apply {
             hint = "Поиск марки, двигателя или работы"
-            singleLine = true
+            setSingleLine(true)
         }
         root.addView(
             search,
