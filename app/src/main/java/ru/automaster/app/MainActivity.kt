@@ -2,319 +2,333 @@
 package ru.automaster.app
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.os.Bundle
-import android.content.Intent
-import android.graphics.Color
 import android.graphics.Typeface
-import android.view.Gravity
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.ViewGroup
+import android.widget.*
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import org.json.JSONArray
+import org.json.JSONObject
 
 class MainActivity : Activity() {
-    private val ink = Color.rgb(25, 35, 48)
-    private val blue = Color.rgb(24, 105, 190)
-    private val bg = Color.rgb(245, 247, 250)
-    private lateinit var content: LinearLayout
+    private lateinit var root: LinearLayout
+    private val prefs by lazy {
+        getSharedPreferences("automaster_data", Context.MODE_PRIVATE)
+    }
+
+    private val prices = listOf(
+        "Компьютерная диагностика" to 1500,
+        "Замена масла двигателя" to 1200,
+        "Замена масляного фильтра" to 300,
+        "Замена воздушного фильтра" to 400,
+        "Замена салонного фильтра" to 600,
+        "Замена свечей зажигания" to 1000,
+        "Замена тормозных колодок передних" to 1800,
+        "Замена тормозных колодок задних" to 2000,
+        "Замена тормозного диска" to 1500,
+        "Замена тормозной жидкости" to 1200,
+        "Замена антифриза" to 1800,
+        "Замена термостата" to 2500,
+        "Замена ремня ГРМ" to 6500,
+        "Замена приводного ремня" to 1500,
+        "Замена воздушного патрубка" to 700,
+        "Замена аккумулятора" to 500,
+        "Замена стартера" to 2500,
+        "Замена генератора" to 2500,
+        "Замена амортизатора" to 2500,
+        "Замена шаровой опоры" to 1800,
+        "Замена рулевого наконечника" to 1200,
+        "Замена ступичного подшипника" to 3500,
+        "Замена сцепления" to 9000,
+        "Замена топливного фильтра" to 1200,
+        "Регулировка клапанов" to 3000,
+        "Снятие и установка головки блока" to 12000,
+        "Замена прокладки ГБЦ" to 18000,
+        "Замена двигателя" to 25000,
+        "Замена АКПП" to 18000,
+        "Замена МКПП" to 12000,
+        "Проверка подвески" to 1000,
+        "Развал-схождение" to 2500
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = ink
-        window.navigationBarColor = ink
         showHome()
     }
 
-    private fun base(title: String, subtitle: String) {
-        val root = LinearLayout(this).apply {
+    private fun makeRoot(title: String) {
+        root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(bg)
+            setPadding(28, 24, 28, 24)
         }
-
-        val header = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(22, 22, 22, 20)
-            setBackgroundColor(ink)
-        }
-
-        header.addView(TextView(this).apply {
-            text = "АВТОМАСТЕР"
-            textSize = 12f
-            setTextColor(Color.rgb(130, 190, 255))
-        })
-
-        header.addView(TextView(this).apply {
-            text = title
-            textSize = 26f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.WHITE)
-            setPadding(0, 8, 0, 4)
-        })
-
-        header.addView(TextView(this).apply {
-            text = subtitle
-            textSize = 14f
-            setTextColor(Color.rgb(210, 220, 232))
-        })
-
-        root.addView(header)
-
         val scroll = ScrollView(this)
-        content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 24)
-        }
-        scroll.addView(content)
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
-        val nav = LinearLayout(this).apply {
-            setPadding(4, 4, 4, 4)
-            setBackgroundColor(Color.WHITE)
-            gravity = Gravity.CENTER
-        }
-
-        listOf("Главная", "Авто", "Прайс", "Заказ-наряд").forEach { label ->
-            nav.addView(Button(this).apply {
-                text = label
-                textSize = 10f
-                isAllCaps = false
-                setOnClickListener {
-                    when (label) {
-                        "Главная" -> showHome()
-                        "Авто" -> showCars()
-                        "Прайс" -> showPrices()
-                        else -> showWorkOrder()
-                    }
-                }
-            }, LinearLayout.LayoutParams(0, -2, 1f))
-        }
-
-        root.addView(nav)
-        setContentView(root)
+        scroll.addView(root)
+        setContentView(scroll)
+        addText(title, 25, true)
+        addText("АвтоМастер • автосервис", 14, false)
+        addButton("← На главную") { showHome() }
     }
 
-    private fun heading(text: String) {
-        content.addView(TextView(this).apply {
+    private fun addText(text: String, size: Int = 16, bold: Boolean = false) {
+        root.addView(TextView(this).apply {
             this.text = text
-            textSize = 18f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(ink)
-            setPadding(2, 14, 2, 8)
+            textSize = size.toFloat()
+            if (bold) setTypeface(null, Typeface.BOLD)
+            setPadding(0, 10, 0, 10)
         })
     }
 
-    private fun card(
-        title: String,
-        description: String,
-        action: (() -> Unit)? = null
-    ) {
-        val box = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 14, 16, 14)
-            setBackgroundColor(Color.WHITE)
-        }
-
-        box.addView(TextView(this).apply {
-            text = title
-            textSize = 17f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(ink)
-        })
-
-        box.addView(TextView(this).apply {
-            text = description
-            textSize = 14f
-            setTextColor(Color.rgb(90, 101, 115))
-            setPadding(0, 6, 0, 0)
-        })
-
-        if (action != null) box.setOnClickListener { action() }
-
-        content.addView(
-            box,
-            LinearLayout.LayoutParams(-1, -2).apply {
-                bottomMargin = 10
-            }
-        )
-    }
-
-    private fun field(hint: String): EditText {
-        val edit = EditText(this).apply {
-            this.hint = hint
-            textSize = 15f
-            setSingleLine(true)
-            setPadding(12, 8, 12, 8)
-            setBackgroundColor(Color.WHITE)
-        }
-
-        content.addView(
-            edit,
-            LinearLayout.LayoutParams(-1, -2).apply {
-                bottomMargin = 10
-            }
-        )
-        return edit
-    }
-
-    private fun actionButton(label: String, action: () -> Unit) {
-        content.addView(Button(this).apply {
-            text = label
+    private fun addButton(text: String, action: () -> Unit) {
+        root.addView(Button(this).apply {
+            this.text = text
             isAllCaps = false
-            setTextColor(Color.WHITE)
-            setBackgroundColor(blue)
             setOnClickListener { action() }
-        }, LinearLayout.LayoutParams(-1, -2).apply {
-            bottomMargin = 12
-        })
+        }, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ))
     }
 
     private fun showHome() {
-        base("Рабочее место", "Помощник автослесаря · офлайн")
-        heading("Быстрый доступ")
+        makeRoot("АвтоМастер")
+        addText("Управление автосервисом", 18, true)
+        addButton("Автомобили клиентов") { showCars() }
+        addButton("Прайс-лист работ") { showPrices() }
+        addButton("Заказ-наряды") { showOrders() }
+        addButton("Диагностика") { showDiagnostics() }
+        addText("Данные автомобилей и заказ-нарядов сохраняются на этом телефоне.")
+        addText("Цены ориентировочные. Уточняйте стоимость перед ремонтом.")
+    }
 
-        card("Автомобили", "Карточки клиентов и автомобилей") {
-            showCars()
+    private fun readRecords(key: String): JSONArray {
+        return try {
+            JSONArray(prefs.getString(key, "[]") ?: "[]")
+        } catch (_: Exception) {
+            JSONArray()
         }
-        card("Прайс-лист работ", "Стандартные цены для Красноярского края") {
-            showPrices()
-        }
-        card("Заказ-наряд", "Создание черновика документа") {
-            showWorkOrder()
-        }
-        card("Диагностика", "Коды ошибок и заметки по неисправностям") {
-            showDiagnostics()
-        }
+    }
 
-        heading("О приложении")
-        card(
-            "АвтоМастер · версия 1.0",
-            "Первая версия. Данные пока не сохраняются после закрытия приложения."
-        )
+    private fun saveRecord(key: String, record: JSONObject) {
+        val records = readRecords(key)
+        records.put(record)
+        prefs.edit().putString(key, records.toString()).apply()
     }
 
     private fun showCars() {
-        base("Автомобили", "Карточка автомобиля")
-        heading("Данные автомобиля")
+        makeRoot("Автомобили клиентов")
+        addButton("+ Добавить автомобиль") { addCarDialog() }
 
-        val make = field("Марка, например Toyota")
-        val model = field("Модель")
-        val year = field("Год выпуска")
-        val vin = field("Госномер или VIN")
-        val engine = field("Двигатель")
-        val note = field("Жалоба клиента")
-
-        actionButton("Сформировать карточку") {
-            val values = listOf(
-                "Марка: ${make.text}",
-                "Модель: ${model.text}",
-                "Год: ${year.text}",
-                "VIN / номер: ${vin.text}",
-                "Двигатель: ${engine.text}",
-                "Примечание: ${note.text}"
-            ).filterNot { it.substringAfter(": ").isBlank() }
-
-            if (values.isEmpty()) {
-                Toast.makeText(
-                    this, "Заполни хотя бы марку автомобиля",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                shareText("Карточка автомобиля", values.joinToString("\n"))
+        val cars = readRecords("cars")
+        if (cars.length() == 0) addText("Пока нет сохранённых автомобилей.")
+        for (i in cars.length() - 1 downTo 0) {
+            val car = cars.getJSONObject(i)
+            addText(
+                "${car.optString("brand")} ${car.optString("model")}\n" +
+                "Год: ${car.optString("year")} • Госномер: ${car.optString("plate")}\n" +
+                "Владелец: ${car.optString("owner")}\n" +
+                "Телефон: ${car.optString("phone")}\n" +
+                "VIN: ${car.optString("vin")}",
+                16, true
+            )
+            addButton("Удалить эту запись") {
+                AlertDialog.Builder(this)
+                    .setMessage("Удалить карточку автомобиля?")
+                    .setNegativeButton("Отмена", null)
+                    .setPositiveButton("Удалить") { _, _ ->
+                        val updated = JSONArray()
+                        for (j in 0 until cars.length()) {
+                            if (j != i) updated.put(cars.getJSONObject(j))
+                        }
+                        prefs.edit().putString("cars", updated.toString()).apply()
+                        showCars()
+                    }.show()
             }
         }
+    }
 
-        card("Примечание", "Постоянное хранение карточек добавим следующим этапом.")
+    private fun addCarDialog() {
+        val fields = listOf(
+            "Марка" to "Toyota",
+            "Модель" to "Corolla",
+            "Год выпуска" to "2008",
+            "Госномер" to "",
+            "Владелец" to "",
+            "Телефон" to "",
+            "VIN" to ""
+        )
+        showForm("Новый автомобиль", fields) { values ->
+            if (values[0].isBlank() || values[1].isBlank()) {
+                toast("Укажи марку и модель")
+                return@showForm
+            }
+            val record = JSONObject()
+            val keys = listOf("brand", "model", "year", "plate", "owner", "phone", "vin")
+            keys.forEachIndexed { i, key -> record.put(key, values[i]) }
+            saveRecord("cars", record)
+            showCars()
+            toast("Автомобиль сохранён")
+        }
     }
 
     private fun showPrices() {
-        base("Прайс-лист", "Красноярский край · стандарт")
-        heading("Стоимость работ")
-
-        val rows = listOf(
-            "Компьютерная диагностика — от 1 000 ₽",
-            "Замена масла и фильтра — от 1 200 ₽",
-            "Замена воздушного фильтра — от 300 ₽",
-            "Замена свечей зажигания — от 800 ₽",
-            "Передние тормозные колодки — от 1 500 ₽",
-            "Тормозные диски за ось — от 2 500 ₽",
-            "Замена масла в АКПП — от 2 500 ₽",
-            "Замена ремня ГРМ — от 5 000 ₽",
-            "Передний амортизатор — от 2 500 ₽",
-            "Поиск неисправности двигателя — от 1 500 ₽"
-        )
-
-        rows.forEachIndexed { index, row ->
-            card("${index + 1}. $row", "Стоимость работы без запчастей")
+        makeRoot("Прайс-лист")
+        addText("Ориентировочные цены на работы, ₽", 17, true)
+        prices.forEach { (name, price) ->
+            addText("$name — $price ₽")
         }
-
-        card(
-            "Важно",
-            "Цены ориентировочные. Перед использованием в автосервисе проверь их по своим расценкам."
-        )
+        addButton("Создать заказ-наряд") { addOrderDialog() }
     }
 
-    private fun showWorkOrder() {
-        base("Заказ-наряд", "Черновик документа")
-        heading("Клиент и автомобиль")
+    private fun showOrders() {
+        makeRoot("Заказ-наряды")
+        addButton("+ Новый заказ-наряд") { addOrderDialog() }
 
-        val client = field("ФИО клиента")
-        val vehicle = field("Марка, модель, год")
-        val plate = field("Госномер")
-        val mileage = field("Пробег, км")
-        val complaint = field("Жалоба клиента")
-        val work = field("Выполненные работы")
-        val parts = field("Запчасти и материалы")
-        val price = field("Стоимость работ, ₽")
-
-        actionButton("Поделиться заказ-нарядом") {
-            val lines = listOf(
-                "ЗАКАЗ-НАРЯД",
-                "Клиент: ${client.text}",
-                "Автомобиль: ${vehicle.text}",
-                "Госномер: ${plate.text}",
-                "Пробег: ${mileage.text}",
-                "Жалоба: ${complaint.text}",
-                "Работы: ${work.text}",
-                "Материалы: ${parts.text}",
-                "Стоимость работ: ${price.text} ₽"
-            )
-            shareText("Заказ-наряд АвтоМастер", lines.joinToString("\n"))
+        val orders = readRecords("orders")
+        if (orders.length() == 0) addText("Заказ-нарядов пока нет.")
+        for (i in orders.length() - 1 downTo 0) {
+            val order = orders.getJSONObject(i)
+            val description =
+                "Заказ № ${order.optString("number")}\n" +
+                "Клиент: ${order.optString("customer")}\n" +
+                "Автомобиль: ${order.optString("car")}\n" +
+                "Работы: ${order.optString("works")}\n" +
+                "Стоимость: ${order.optString("price")} ₽\n" +
+                "Статус: ${order.optString("status")}\n" +
+                "Дата: ${order.optString("date")}"
+            addText(description, 16, true)
+            addButton("Поделиться заказ-нарядом") {
+                shareText(description)
+            }
+            addButton("Удалить заказ-наряд") {
+                AlertDialog.Builder(this)
+                    .setMessage("Удалить заказ-наряд?")
+                    .setNegativeButton("Отмена", null)
+                    .setPositiveButton("Удалить") { _, _ ->
+                        val updated = JSONArray()
+                        for (j in 0 until orders.length()) {
+                            if (j != i) updated.put(orders.getJSONObject(j))
+                        }
+                        prefs.edit().putString("orders", updated.toString()).apply()
+                        showOrders()
+                    }.show()
+            }
         }
+    }
 
-        card("Статус", "Пока можно отправить черновик текстом. PDF добавим отдельно.")
+    private fun addOrderDialog() {
+        val fields = listOf(
+            "Номер заказ-наряда" to "001",
+            "ФИО клиента" to "",
+            "Автомобиль (марка, модель, номер)" to "",
+            "Перечень работ" to "",
+            "Стоимость работ, ₽" to "0",
+            "Статус (принят / в работе / готов)" to "Принят",
+            "Дата" to java.text.SimpleDateFormat(
+                "dd.MM.yyyy", java.util.Locale.getDefault()
+            ).format(java.util.Date())
+        )
+        showForm("Новый заказ-наряд", fields) { values ->
+            if (values[1].isBlank() || values[3].isBlank()) {
+                toast("Заполни клиента и перечень работ")
+                return@showForm
+            }
+            val price = values[4].toDoubleOrNull()
+            if (price == null || price < 0) {
+                toast("Проверь стоимость")
+                return@showForm
+            }
+            val record = JSONObject()
+            val keys = listOf(
+                "number", "customer", "car", "works",
+                "price", "status", "date"
+            )
+            values.forEachIndexed { i, value -> record.put(keys[i], value) }
+            saveRecord("orders", record)
+            showOrders()
+            toast("Заказ-наряд сохранён")
+        }
     }
 
     private fun showDiagnostics() {
-        base("Диагностика", "Заметки по ремонту")
-        heading("Запись диагностики")
-
-        val vehicle = field("Автомобиль и двигатель")
-        val dtc = field("Коды ошибок OBD-II")
-        val symptoms = field("Симптомы")
-        val readings = field("Показания сканера")
-        val conclusion = field("Предполагаемая причина")
-
-        actionButton("Поделиться диагностикой") {
-            val lines = listOf(
-                "ДИАГНОСТИКА",
-                "Автомобиль: ${vehicle.text}",
-                "Коды ошибок: ${dtc.text}",
-                "Симптомы: ${symptoms.text}",
-                "Показания: ${readings.text}",
-                "Предполагаемая причина: ${conclusion.text}"
-            )
-            shareText("Диагностика АвтоМастер", lines.joinToString("\n"))
+        makeRoot("Диагностика")
+        addText("Запиши результаты проверки автомобиля.")
+        val car = EditText(this).apply {
+            hint = "Автомобиль и двигатель"
         }
+        val symptoms = EditText(this).apply {
+            hint = "Жалобы и симптомы"
+        }
+        val data = EditText(this).apply {
+            hint = "Коды ошибок и показания сканера"
+            minLines = 3
+            gravity = android.view.Gravity.TOP
+        }
+        val conclusion = EditText(this).apply {
+            hint = "Выводы и рекомендации"
+            minLines = 3
+            gravity = android.view.Gravity.TOP
+        }
+        listOf(car, symptoms, data, conclusion).forEach { root.addView(it) }
+        addButton("Поделиться результатами") {
+            val text = "ДИАГНОСТИКА\nАвтомобиль: ${car.text}\n" +
+                "Симптомы: ${symptoms.text}\n" +
+                "Данные сканера: ${data.text}\n" +
+                "Выводы: ${conclusion.text}"
+            shareText(text)
+        }
+        addText("Примечание: этот экран пока не сохраняет записи после выхода.")
     }
 
-    private fun shareText(subject: String, text: String) {
+    private fun showForm(
+        title: String,
+        fields: List<Pair<String, String>>,
+        onSave: (List<String>) -> Unit
+    ) {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(32, 8, 32, 8)
+        }
+        val inputs = fields.map { (label, initial) ->
+            EditText(this).apply {
+                hint = label
+                setText(initial)
+                singleLine = false
+                maxLines = 3
+                setPadding(8, 12, 8, 12)
+                container.addView(this)
+            }
+        }
+        val scroll = ScrollView(this)
+        scroll.addView(container)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(title)
+            .setView(scroll)
+            .setNegativeButton("Отмена", null)
+            .setPositiveButton("Сохранить", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                onSave(inputs.map { it.text.toString().trim() })
+                if (!dialog.isShowing) return@setOnClickListener
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
+    }
+
+    private fun shareText(text: String) {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT, text)
         }
         startActivity(Intent.createChooser(intent, "Поделиться"))
+    }
+
+    private fun toast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
