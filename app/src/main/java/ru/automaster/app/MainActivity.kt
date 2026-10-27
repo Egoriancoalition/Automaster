@@ -385,7 +385,11 @@ class MainActivity : Activity() {
                 Intent(this, RepairReferenceActivity::class.java)
             )
         }
-
+addButton("Поиск двигателя по VIN") {
+    startActivity(
+        Intent(this, VinLookupActivity::class.java)
+    )
+}
         addButton("История обслуживания") {
             showHistory()
         }
