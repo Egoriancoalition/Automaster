@@ -1,13 +1,18 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-permission android:name="android.permission.INTERNET" />
-  <activity
-    android:name=".VinLookupActivity"
-    android:exported="false" />  <application
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
         android:allowBackup="true"
         android:label="АвтоМастер"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:supportsRtl="true">
+
+        <activity
+            android:name=".VinLookupActivity"
+            android:exported="false" />
 
         <activity
             android:name=".RepairReferenceActivity"
