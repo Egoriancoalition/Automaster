@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1045005384925",
+    "project_id": "automaster-51fa5",
+    "storage_bucket": "automaster-51fa5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045005384925:android:2b24a29f30232844fb6f34",
+        "android_client_info": {
+          "package_name": "ru.automaster.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU8i0pNmXlhAw_VL-2SHwLRSCKUux98P0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
